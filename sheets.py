@@ -8,7 +8,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", sco
 client = gspread.authorize(creds)
 
 # Tên Sheet
-SHEET_NAME = "bia_league"
+SHEET_NAME = "bialeague"
 sheet = client.open(SHEET_NAME).sheet1
 
 def load_players():
