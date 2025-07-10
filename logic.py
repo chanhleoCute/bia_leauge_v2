@@ -1,18 +1,19 @@
 import json
 from models import Player, Rank
+from sheets import load_players, save_players
 
 
-def load_players(file="data.json"):
-    try:
-        with open(file, "r") as f:
-            data = json.load(f)
-        return [Player.from_dict(d) for d in data]
-    except FileNotFoundError:
-        return []
+# def load_players(file="data.json"):
+#     try:
+#         with open(file, "r") as f:
+#             data = json.load(f)
+#         return [Player.from_dict(d) for d in data]
+#     except FileNotFoundError:
+#         return []
 
-def save_players(players, file="data.json"):
-    with open(file, "w") as f:
-        json.dump([p.to_dict() for p in players], f, indent=2)
+# def save_players(players, file="data.json"):
+#     with open(file, "w") as f:
+#         json.dump([p.to_dict() for p in players], f, indent=2)
 
 def assign_points(rank_name, placements):
     pts = []
