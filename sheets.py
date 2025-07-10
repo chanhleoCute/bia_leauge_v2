@@ -1,10 +1,13 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from models import Player, Rank
+import streamlit as st
+import json
 
-# Kết nối Google Sheets
+# Kết nối Google Sheets bằng secrets
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])  # Đọc từ secrets
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 
 # Tên Sheet
