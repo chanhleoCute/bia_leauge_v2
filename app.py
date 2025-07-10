@@ -6,7 +6,7 @@ from logic import load_players, save_players, assign_points, update_ranks
 
 st.set_page_config(page_title="🎱 Bảng xếp hạng Bi-a", layout="centered")
 
-st.title("🎱 Bảng Xếp Hạng Bi-a 10 Người")
+# ==== MÀU NỀN CHUNG ====
 st.markdown("""
     <style>
     body {
@@ -14,10 +14,14 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
-players = load_players()
 
-if "initialized" not in st.session_state:
-    st.session_state.initialized = True
+st.title("🎱 Bảng Xếp Hạng Bi-a 10 Người")
+
+# ==== LOAD DỮ LIỆU TỪ GOOGLE SHEETS ====
+if "players" not in st.session_state:
+    st.session_state.players = load_players()
+
+players = st.session_state.players
 
 # ===================== KHỞI TẠO NGƯỜI CHƠI =====================
 if not players:
@@ -30,13 +34,14 @@ if not players:
     if st.button("✅ Tạo danh sách"):
         players = [Player(name.strip()) for name in names if name.strip()]
         save_players(players)
+        st.session_state.players = load_players()
         st.rerun()
     st.stop()
 
 # ===================== LEADERBOARD =====================
 st.subheader("📊 Bảng xếp hạng (Leaderboard)")
 
-# Tạo bảng xếp hạng
+# Sắp xếp theo điểm
 players_sorted = sorted(players, key=lambda x: x.points, reverse=True)
 
 df = pd.DataFrame([{
@@ -53,12 +58,12 @@ selected_ranks = st.multiselect(
 )
 df_filtered = df[df["Cấp bậc"].isin(selected_ranks)]
 
-# Hiển thị bảng có màu cấp bậc
+# Màu cấp bậc
 def highlight_rank(row):
     color_map = {
-        "Cao cấp": "background-color: #ffd700",  # vàng
-        "Trung cấp": "background-color: #add8e6",  # xanh nhạt
-        "Sơ cấp": "background-color: #f08080"  # đỏ nhạt
+        "Cao cấp": "background-color: #ffd700",     # vàng
+        "Trung cấp": "background-color: #add8e6",   # xanh nhạt
+        "Sơ cấp": "background-color: #f08080"       # đỏ nhạt
     }
     return [color_map.get(row["Cấp bậc"], "")] * len(row)
 
@@ -97,14 +102,16 @@ for table in ["Cao cấp", "Trung cấp", "Sơ cấp"]:
         table_results.append(name)
     results[table] = table_results
 
+# ===================== CẬP NHẬT KẾT QUẢ =====================
 if st.button("📥 Cập nhật kết quả"):
     for table, order in results.items():
         for name, pts in assign_points(table, order):
             for p in players:
                 if p.name == name:
-                    p.points += pts  # ✅ Cập nhật điểm
+                    p.points += pts
                     break
     update_ranks(players, results)
     save_players(players)
+    st.session_state.players = load_players()  # reload mới từ Google Sheets
     st.success("✅ Đã cập nhật kết quả và xếp hạng!")
     st.rerun()
