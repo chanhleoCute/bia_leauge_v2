@@ -6,11 +6,10 @@ import json
 
 # Kết nối Google Sheets bằng secrets
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])  # Đọc từ secrets
+creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 
-# Tên Sheet
 SHEET_NAME = "bialeague"
 sheet = client.open(SHEET_NAME).sheet1
 
@@ -30,7 +29,6 @@ def load_players():
             print(f"Dòng {i+2} lỗi không xác định: {e} - Giá trị r: {r}")
 
     return players
-
 
 def save_players(players):
     sheet.clear()

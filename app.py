@@ -41,7 +41,6 @@ if not players:
 # ===================== LEADERBOARD =====================
 st.subheader("📊 Bảng xếp hạng (Leaderboard)")
 
-# Sắp xếp theo điểm
 players_sorted = sorted(players, key=lambda x: x.points, reverse=True)
 
 df = pd.DataFrame([{
@@ -112,6 +111,6 @@ if st.button("📥 Cập nhật kết quả"):
                     break
     update_ranks(players, results)
     save_players(players)
-    st.session_state.players = load_players()  # reload mới từ Google Sheets
+    st.session_state.players = load_players()  # reload từ Google Sheets
     st.success("✅ Đã cập nhật kết quả và xếp hạng!")
     st.rerun()

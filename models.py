@@ -14,6 +14,18 @@ class Rank(Enum):
     def __str__(self):
         return ["Sơ cấp", "Trung cấp", "Cao cấp"][self.value]
 
+    @staticmethod
+    def from_str(label):
+        label = label.strip().lower()
+        if label == "sơ cấp":
+            return Rank.SO_CAP
+        elif label == "trung cấp":
+            return Rank.TRUNG_CAP
+        elif label == "cao cấp":
+            return Rank.CAO_CAP
+        else:
+            raise ValueError(f"Không xác định được rank từ chuỗi: {label}")
+
 class Player:
     def __init__(self, name, rank=Rank.TRUNG_CAP, points=0):
         self.name = name
