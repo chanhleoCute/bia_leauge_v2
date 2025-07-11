@@ -66,13 +66,14 @@ for table in ["Cao cấp", "Trung cấp", "Sơ cấp"]:
     st.markdown(f"**Bàn {table}**")
     n = st.number_input(f"Số người chơi tại bàn {table}", 0, 5, key=f"num_{table}")
     players_in_rank = [p.name for p in players if str(p.rank) == table]
-    table_results = [
-        st.selectbox(
-            f"Vị trí {i+1} tại bàn {table}",
-            players_in_rank,
-            key=f"{table}_{i}"
-        ) for i in range(n)
-    ]
+    selected = []
+    table_results = []
+    for i in range(n):
+        available = [name for name in players_in_rank if name not in selected]
+        if available:
+            choice = st.selectbox(f"Vị trí {i+1} tại bàn {table}", available, key=f"{table}_{i}")
+            selected.append(choice)
+            table_results.append(choice)
     results[table] = table_results
 
 if st.button("📥 Cập nhật kết quả"):
