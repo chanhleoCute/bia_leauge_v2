@@ -64,8 +64,8 @@ st.subheader("🎮 Nhập kết quả buổi chơi")
 results = {}
 for table in ["Cao cấp", "Trung cấp", "Sơ cấp"]:
     st.markdown(f"**Bàn {table}**")
-    n = st.number_input(f"Số người chơi tại bàn {table}", 0, 5, key=f"num_{table}")
     players_in_rank = [p.name for p in players if str(p.rank) == table]
+    n = st.number_input(f"Số người chơi tại bàn {table}", 0, len(players_in_rank), key=f"num_{table}")
     selected = []
     table_results = []
     for i in range(n):
@@ -81,5 +81,11 @@ if st.button("📥 Cập nhật kết quả"):
     ranks_by_table = {table: table for table in results_by_table}
     update_players_scores(players, results_by_table, ranks_by_table)
     st.session_state.players = load_players()
+
+    # Reset input sau khi cập nhật
+    for key in list(st.session_state.keys()):
+        if key.startswith("num_") or any(key.startswith(f"{table}_") for table in ["Cao cấp", "Trung cấp", "Sơ cấp"]):
+            del st.session_state[key]
+
     st.success("✅ Đã cập nhật kết quả và xếp hạng sau buổi chơi!")
     st.rerun()

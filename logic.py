@@ -1,19 +1,16 @@
 from models import Player, Rank
 from sheets import load_players, save_players
 
-games_played = 0  # bạn có thể lưu biến này vào Google Sheet nếu muốn duy trì
+games_played = 0  
 
 def assign_points(rank_name, placements):
     pts = []
-    if rank_name == "Cao cấp":
-        scores = [3, 2, 1] + [0] * (len(placements) - 3)
-    elif rank_name == "Trung cấp":
-        scores = [2, 1] + [0] * (len(placements) - 2)
-    else:
-        scores = [1] + [0] * (len(placements) - 1)
+    scores = [3, 2, 1] + [0] * (len(placements) - 3)  
+
     for i, name in enumerate(placements):
         pts.append((name, scores[i]))
     return pts
+
 
 def update_players_scores(players, results_by_table, ranks_by_table):
     global games_played
