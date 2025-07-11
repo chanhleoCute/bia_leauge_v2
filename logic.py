@@ -1,20 +1,14 @@
 from models import Player, Rank
 from sheets import load_players, save_players
 
-games_played = 0  
-
 def assign_points(rank_name, placements):
     pts = []
-    scores = [3, 2, 1] + [0] * (len(placements) - 3)  
-
+    scores = [3, 2, 1] + [0] * (len(placements) - 3)  # áp dụng chung cho mọi bàn
     for i, name in enumerate(placements):
         pts.append((name, scores[i]))
     return pts
 
-
 def update_players_scores(players, results_by_table, ranks_by_table):
-    global games_played
-    games_played += 1
     for table, placements in results_by_table.items():
         rank_name = ranks_by_table.get(table)
         if not placements or not rank_name:
@@ -25,11 +19,9 @@ def update_players_scores(players, results_by_table, ranks_by_table):
             if player:
                 player.session_points += pts
                 player.total_points += pts
-    if games_played % 2 == 0:
-        process_rank_changes(players)
     save_players(players)
 
-def process_rank_changes(players):
+def update_ranks_after_session(players):
     rank_names = ["Cao cấp", "Trung cấp", "Sơ cấp"]
     for i in range(len(rank_names) - 1):
         upper = rank_names[i]
@@ -38,9 +30,17 @@ def process_rank_changes(players):
         lower_players = [p for p in players if str(p.rank) == lower]
         if not upper_players or not lower_players:
             continue
+
+        # Người thấp điểm nhất ở rank cao → xuống hạng
         lowest_upper = min(upper_players, key=lambda p: p.session_points)
-        highest_lower = max(lower_players, key=lambda p: p.session_points)
         lowest_upper.rank = lowest_upper.rank.down()
+
+        # Người cao điểm nhất ở rank thấp → lên hạng
+        highest_lower = max(lower_players, key=lambda p: p.session_points)
         highest_lower.rank = highest_lower.rank.up()
+
+    # Reset lại điểm 2 buổi sau khi xét hạng
     for p in players:
         p.session_points = 0
+
+    save_players(players)

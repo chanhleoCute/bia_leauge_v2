@@ -80,12 +80,14 @@ if st.button("📥 Cập nhật kết quả"):
     results_by_table = {table: order for table, order in results.items() if order}
     ranks_by_table = {table: table for table in results_by_table}
     update_players_scores(players, results_by_table, ranks_by_table)
-    st.session_state.players = load_players()
 
-    # Reset input sau khi cập nhật
+    # Sau mỗi buổi chơi thì xét lên/xuống hạng ngay
+    from logic import update_ranks_after_session
+    update_ranks_after_session(players)
+
+    st.session_state.players = load_players()
     for key in list(st.session_state.keys()):
         if key.startswith("num_") or any(key.startswith(f"{table}_") for table in ["Cao cấp", "Trung cấp", "Sơ cấp"]):
             del st.session_state[key]
-
     st.success("✅ Đã cập nhật kết quả và xếp hạng sau buổi chơi!")
     st.rerun()
