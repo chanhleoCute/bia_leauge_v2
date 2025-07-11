@@ -1,9 +1,10 @@
+# === main.py ===
+import streamlit as st
 import pandas as pd
 import altair as alt
 from models import Player, Rank
 from sheets import load_players
 from logic import assign_points, update_players_scores
-import streamlit as st
 
 st.set_page_config(page_title="🎱 Bảng xếp hạng Bi-a", layout="centered")
 
@@ -64,7 +65,14 @@ results = {}
 for table in ["Cao cấp", "Trung cấp", "Sơ cấp"]:
     st.markdown(f"**Bàn {table}**")
     n = st.number_input(f"Số người chơi tại bàn {table}", 0, 5, key=f"num_{table}")
-    table_results = [st.selectbox(f"Vị trí {i+1} tại bàn {table}", [p.name for p in players], key=f"{table}_{i}") for i in range(n)]
+    players_in_rank = [p.name for p in players if str(p.rank) == table]
+    table_results = [
+        st.selectbox(
+            f"Vị trí {i+1} tại bàn {table}",
+            players_in_rank,
+            key=f"{table}_{i}"
+        ) for i in range(n)
+    ]
     results[table] = table_results
 
 if st.button("📥 Cập nhật kết quả"):
