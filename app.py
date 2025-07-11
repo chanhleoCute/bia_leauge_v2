@@ -1,9 +1,9 @@
-import streamlit as st
 import pandas as pd
 import altair as alt
 from models import Player, Rank
 from sheets import load_players
 from logic import assign_points, update_players_scores
+import streamlit as st
 
 st.set_page_config(page_title="🎱 Bảng xếp hạng Bi-a", layout="centered")
 
