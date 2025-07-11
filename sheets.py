@@ -4,7 +4,6 @@ from models import Player, Rank
 import streamlit as st
 import json
 
-# Kết nối Google Sheets bằng secrets
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
@@ -16,22 +15,19 @@ sheet = client.open(SHEET_NAME).sheet1
 def load_players():
     records = sheet.get_all_records()
     players = []
-
     for i, r in enumerate(records):
         try:
             name = r['name']
             rank = Rank.from_str(r['rank'])
-            points = int(r['points'])
-            players.append(Player(name, rank, points))
-        except KeyError as e:
-            print(f"Dòng {i+2} thiếu khóa: {e} - Giá trị r: {r}")
+            total_points = int(r.get('total_points', 0))
+            session_points = int(r.get('session_points', 0))
+            players.append(Player(name, rank, total_points, session_points))
         except Exception as e:
-            print(f"Dòng {i+2} lỗi không xác định: {e} - Giá trị r: {r}")
-
+            print(f"Dòng {i+2} lỗi: {e} - Giá trị r: {r}")
     return players
 
 def save_players(players):
     sheet.clear()
-    sheet.append_row(["name", "rank", "points"])
+    sheet.append_row(["name", "rank", "total_points", "session_points"])
     for p in players:
-        sheet.append_row([p.name, str(p.rank), p.points])
+        sheet.append_row([p.name, str(p.rank), p.total_points, p.session_points])

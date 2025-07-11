@@ -1,3 +1,4 @@
+# === models.py ===
 from enum import Enum
 
 class Rank(Enum):
@@ -27,18 +28,25 @@ class Rank(Enum):
             raise ValueError(f"Không xác định được rank từ chuỗi: {label}")
 
 class Player:
-    def __init__(self, name, rank=Rank.TRUNG_CAP, points=0):
+    def __init__(self, name, rank=Rank.TRUNG_CAP, total_points=0, session_points=0):
         self.name = name
         self.rank = rank
-        self.points = points
+        self.total_points = total_points
+        self.session_points = session_points
 
     def to_dict(self):
         return {
             "name": self.name,
             "rank": self.rank.value,
-            "points": self.points
+            "total_points": self.total_points,
+            "session_points": self.session_points
         }
 
     @staticmethod
     def from_dict(data):
-        return Player(data["name"], Rank(data["rank"]), data["points"])
+        return Player(
+            data["name"],
+            Rank(data["rank"]),
+            data.get("total_points", 0),
+            data.get("session_points", 0)
+        )
