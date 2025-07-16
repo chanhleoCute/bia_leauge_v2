@@ -18,7 +18,6 @@ def update_players_scores(players, results_by_table, ranks_by_table):
             player = next((p for p in players if p.name == name), None)
             if player:
                 player.session_points += pts
-                player.total_points += pts
     save_players(players)
 
 def update_ranks_after_session(players):
@@ -39,8 +38,14 @@ def update_ranks_after_session(players):
         highest_lower = max(lower_players, key=lambda p: p.session_points)
         highest_lower.rank = highest_lower.rank.up()
 
-    # Reset lại điểm 2 buổi sau khi xét hạng
+    # Reset lại điểm session sau khi xét hạng
     for p in players:
         p.session_points = 0
 
     save_players(players)
+
+def finalize_session(players):
+    # Cộng điểm session vào total trước khi xét rank
+    for p in players:
+        p.total_points += p.session_points
+    update_ranks_after_session(players)

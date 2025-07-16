@@ -32,7 +32,7 @@ players_sorted = sorted(players, key=lambda x: x.total_points, reverse=True)
 df = pd.DataFrame([{
     "Tên": p.name,
     "Cấp bậc": str(p.rank),
-    "Điểm 2 buổi": p.session_points,
+    "Điểm buổi này": p.session_points,
     "Tổng điểm": p.total_points
 } for p in players_sorted])
 
@@ -81,13 +81,20 @@ if st.button("📥 Cập nhật kết quả"):
     ranks_by_table = {table: table for table in results_by_table}
     update_players_scores(players, results_by_table, ranks_by_table)
 
-    # Sau mỗi buổi chơi thì xét lên/xuống hạng ngay
-    from logic import update_ranks_after_session
-    update_ranks_after_session(players)
-
     st.session_state.players = load_players()
     for key in list(st.session_state.keys()):
         if key.startswith("num_") or any(key.startswith(f"{table}_") for table in ["Cao cấp", "Trung cấp", "Sơ cấp"]):
             del st.session_state[key]
-    st.success("✅ Đã cập nhật kết quả và xếp hạng sau buổi chơi!")
+    st.success("✅ Đã cập nhật kết quả tạm thời (session points)!")
+    st.rerun()
+
+# === Kết thúc buổi chơi và cập nhật rank ===
+st.markdown("---")
+st.subheader("🏁 Kết thúc buổi chơi")
+
+if st.button("✅ Cộng điểm & Xếp hạng"):
+    from logic import finalize_session
+    finalize_session(players)
+    st.session_state.players = load_players()
+    st.success("🎯 Đã cộng điểm vào tổng và cập nhật cấp bậc!")
     st.rerun()
